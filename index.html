@@ -2,11 +2,353 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AI ROI Calculator</title>
-  <meta http-equiv="refresh" content="0; url=./roi_calculator.html" />
-  <link rel="canonical" href="./roi_calculator.html" />
+  <style>
+    :root {
+      --bg: #0d1117;
+      --panel: #161b22;
+      --panel-alt: #1c2330;
+      --border: #2d3340;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #58a6ff;
+      --accent-soft: rgba(88, 166, 255, 0.12);
+      --positive: #3fb950;
+      --negative: #f85149;
+      --shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 32px 16px;
+      background:
+        radial-gradient(1000px 500px at 100% -10%, rgba(88,166,255,0.08), transparent),
+        radial-gradient(800px 400px at -10% 110%, rgba(63,185,80,0.06), transparent),
+        var(--bg);
+    }
+
+    .card {
+      width: 100%;
+      max-width: 560px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .header {
+      padding: 28px 28px 8px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .header p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .inputs {
+      padding: 20px 28px 8px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .field .hint {
+      font-weight: 400;
+      color: var(--muted);
+      margin-left: 6px;
+      font-size: 0.78rem;
+    }
+
+    .input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-wrap .prefix {
+      position: absolute;
+      left: 14px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      pointer-events: none;
+    }
+
+    .field input {
+      width: 100%;
+      background: var(--panel-alt);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 1rem;
+      padding: 12px 14px;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .field input.has-prefix { padding-left: 28px; }
+
+    .field input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    .results {
+      margin: 12px 28px 0;
+      background: var(--panel-alt);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 22px;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .metric .metric-label {
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+    }
+
+    .metric .metric-value {
+      font-size: 1.85rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .positive { color: var(--positive); }
+    .negative { color: var(--negative); }
+
+    .equation {
+      margin: 18px 0 0;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+    }
+
+    .equation .eq-label {
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 10px;
+    }
+
+    .equation code {
+      display: block;
+      font-family: "SF Mono", "Fira Code", Menlo, Consolas, monospace;
+      font-size: 0.82rem;
+      line-height: 1.7;
+      color: var(--text);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      word-break: break-word;
+    }
+
+    .equation code .hl { color: var(--accent); }
+
+    .interpretation {
+      margin: 0 28px 28px;
+      padding: 16px 18px;
+      background: var(--accent-soft);
+      border-left: 3px solid var(--accent);
+      border-radius: 8px;
+      font-size: 0.92rem;
+      line-height: 1.55;
+      color: var(--text);
+    }
+
+    .interpretation strong { color: var(--accent); }
+
+    @media (max-width: 480px) {
+      .header, .inputs { padding-left: 20px; padding-right: 20px; }
+      .results, .interpretation { margin-left: 20px; margin-right: 20px; }
+      .result-grid { grid-template-columns: 1fr; }
+      .metric .metric-value { font-size: 1.6rem; }
+    }
+  </style>
 </head>
 <body>
-  <p>Redirecting to the <a href="./roi_calculator.html">AI ROI Calculator</a>…</p>
+  <main class="card">
+    <div class="header">
+      <h1>AI ROI Calculator</h1>
+      <p>Estimate the monthly return on AI tooling for an engineer, based on
+         their bill rate, the productivity boost AI gives them, and what the
+         tools cost.</p>
+    </div>
+
+    <div class="inputs">
+      <div class="field">
+        <label for="rate">Engineer bill rate <span class="hint">($ / hour)</span></label>
+        <div class="input-wrap">
+          <span class="prefix">$</span>
+          <input id="rate" class="has-prefix" type="number" min="0" step="1"
+                 inputmode="decimal" placeholder="150" value="150" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="mult">AI efficiency multiplier <span class="hint">(1.2 = 20% more productive)</span></label>
+        <div class="input-wrap">
+          <input id="mult" type="number" min="1" step="0.05"
+                 inputmode="decimal" placeholder="1.2" value="1.2" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="cost">Total monthly AI cost <span class="hint">($ / month)</span></label>
+        <div class="input-wrap">
+          <span class="prefix">$</span>
+          <input id="cost" class="has-prefix" type="number" min="0" step="1"
+                 inputmode="decimal" placeholder="100" value="100" />
+        </div>
+      </div>
+    </div>
+
+    <div class="results">
+      <div class="result-grid">
+        <div class="metric">
+          <div class="metric-label">ROI</div>
+          <div class="metric-value" id="roiValue">—</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Net monthly gain</div>
+          <div class="metric-value" id="gainValue">—</div>
+        </div>
+      </div>
+
+      <div class="equation">
+        <div class="eq-label">The math</div>
+        <code id="equation">—</code>
+      </div>
+    </div>
+
+    <div class="interpretation" id="interpretation">—</div>
+  </main>
+
+  <script>
+    (function () {
+      var HOURS = 160; // 40 hrs/week × 4 weeks
+
+      var rateEl = document.getElementById("rate");
+      var multEl = document.getElementById("mult");
+      var costEl = document.getElementById("cost");
+
+      var roiEl = document.getElementById("roiValue");
+      var gainEl = document.getElementById("gainValue");
+      var eqEl = document.getElementById("equation");
+      var interpEl = document.getElementById("interpretation");
+
+      function fmtMoney(n) {
+        return n.toLocaleString("en-US", {
+          style: "currency",
+          currency: "USD",
+          maximumFractionDigits: 0
+        });
+      }
+
+      function fmtNum(n, dp) {
+        return n.toLocaleString("en-US", {
+          minimumFractionDigits: dp,
+          maximumFractionDigits: dp
+        });
+      }
+
+      function calc() {
+        var R = parseFloat(rateEl.value);
+        var M = parseFloat(multEl.value);
+        var C = parseFloat(costEl.value);
+
+        var valid = isFinite(R) && isFinite(M) && isFinite(C) && C > 0;
+
+        if (!valid) {
+          roiEl.textContent = "—";
+          gainEl.textContent = "—";
+          roiEl.className = "metric-value";
+          gainEl.className = "metric-value";
+          eqEl.innerHTML = "Enter a bill rate, multiplier, and a monthly cost greater than $0.";
+          interpEl.innerHTML = "Fill in all three fields to see your return.";
+          return;
+        }
+
+        // Value of the extra productive hours AI unlocks each month.
+        var grossGain = R * HOURS * (M - 1);
+        var netGain = grossGain - C;
+        var roi = (netGain / C) * 100;
+
+        roiEl.textContent = fmtNum(roi, 0) + "%";
+        gainEl.textContent = fmtMoney(netGain);
+
+        roiEl.className = "metric-value " + (roi >= 0 ? "positive" : "negative");
+        gainEl.className = "metric-value " + (netGain >= 0 ? "positive" : "negative");
+
+        // Equation with the user's current values substituted in.
+        eqEl.innerHTML =
+          "ROI = [ (<span class='hl'>" + fmtNum(R, 0) + "</span> × 160 × (<span class='hl'>" +
+          fmtNum(M, 2) + "</span> − 1)) − <span class='hl'>" + fmtNum(C, 0) +
+          "</span> ] ÷ <span class='hl'>" + fmtNum(C, 0) + "</span> × 100<br>" +
+          "ROI = [ " + fmtMoney(grossGain) + " − " + fmtMoney(C) + " ] ÷ " +
+          fmtMoney(C) + " × 100<br>" +
+          "ROI = <strong>" + fmtNum(roi, 0) + "%</strong>";
+
+        // Plain-English interpretation.
+        var returnPerDollar = grossGain / C; // dollars returned per dollar spent
+        var msg;
+        if (netGain >= 0) {
+          msg = "For every <strong>$1</strong> spent on AI, you're getting back about " +
+            "<strong>" + fmtNum(returnPerDollar, 2) + "</strong> in engineering value — " +
+            "a net gain of <strong>" + fmtMoney(netGain) + "</strong> per month per engineer.";
+        } else {
+          msg = "Right now this is costing more than it returns: every <strong>$1</strong> " +
+            "spent yields only <strong>" + fmtNum(returnPerDollar, 2) + "</strong> back, " +
+            "a net loss of <strong>" + fmtMoney(Math.abs(netGain)) + "</strong> per month. " +
+            "Try a higher bill rate or efficiency multiplier, or a lower cost.";
+        }
+        interpEl.innerHTML = msg;
+      }
+
+      [rateEl, multEl, costEl].forEach(function (el) {
+        el.addEventListener("input", calc);
+      });
+
+      calc();
+    })();
+  </script>
 </body>
 </html>
