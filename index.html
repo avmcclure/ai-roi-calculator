@@ -6,17 +6,23 @@
   <title>AI ROI Calculator</title>
   <style>
     :root {
-      --bg: #0d1117;
-      --panel: #161b22;
-      --panel-alt: #1c2330;
-      --border: #2d3340;
-      --text: #e6edf3;
-      --muted: #8b949e;
-      --accent: #58a6ff;
-      --accent-soft: rgba(88, 166, 255, 0.12);
-      --positive: #3fb950;
-      --negative: #f85149;
-      --shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+      --bg: #14130f;
+      --panel: #1c1a15;
+      --panel-alt: #232019;
+      --rule: #3a352b;
+      --rule-soft: #2b271f;
+      --text: #ece6da;
+      --muted: #9c9484;
+      --faint: #6f6859;
+      --accent: #c9a24b;          /* warm editorial gold */
+      --accent-soft: rgba(201, 162, 75, 0.12);
+      --positive: #8bb87a;
+      --negative: #cf6a52;
+      --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia,
+        "Times New Roman", serif;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+        Arial, sans-serif;
+      --mono: "SF Mono", "Iosevka", Menlo, Consolas, monospace;
     }
 
     * { box-sizing: border-box; }
@@ -26,8 +32,7 @@
       padding: 0;
       background: var(--bg);
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-        Helvetica, Arial, sans-serif;
+      font-family: var(--sans);
       -webkit-font-smoothing: antialiased;
     }
 
@@ -36,195 +41,266 @@
       display: flex;
       align-items: flex-start;
       justify-content: center;
-      padding: 32px 16px;
-      background:
-        radial-gradient(1000px 500px at 100% -10%, rgba(88,166,255,0.08), transparent),
-        radial-gradient(800px 400px at -10% 110%, rgba(63,185,80,0.06), transparent),
-        var(--bg);
+      padding: 48px 20px;
     }
 
-    .card {
+    .page {
       width: 100%;
-      max-width: 560px;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      box-shadow: var(--shadow);
-      overflow: hidden;
+      max-width: 600px;
     }
 
-    .header {
-      padding: 28px 28px 8px;
+    /* ---- Masthead ---- */
+    .masthead {
+      text-align: center;
+      padding-bottom: 22px;
+      border-bottom: 2px solid var(--rule);
+      position: relative;
     }
 
-    .header h1 {
+    .kicker {
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: 0 0 14px;
+    }
+
+    .masthead h1 {
+      font-family: var(--serif);
+      font-weight: 600;
+      font-size: clamp(2rem, 7vw, 2.9rem);
+      line-height: 1.05;
+      letter-spacing: -0.01em;
       margin: 0;
-      font-size: 1.5rem;
-      letter-spacing: -0.02em;
     }
 
-    .header p {
-      margin: 8px 0 0;
+    .dek {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 1.02rem;
+      line-height: 1.55;
       color: var(--muted);
-      font-size: 0.9rem;
-      line-height: 1.5;
+      max-width: 44ch;
+      margin: 14px auto 0;
     }
 
+    /* ---- Inputs ---- */
     .inputs {
-      padding: 20px 28px 8px;
       display: grid;
-      gap: 18px;
+      gap: 4px;
+      margin-top: 14px;
     }
+
+    .field {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 2px;
+      border-bottom: 1px solid var(--rule-soft);
+    }
+
+    .field .label-block { min-width: 0; }
 
     .field label {
       display: block;
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 6px;
+      font-family: var(--serif);
+      font-size: 1.08rem;
+      color: var(--text);
     }
 
     .field .hint {
-      font-weight: 400;
-      color: var(--muted);
-      margin-left: 6px;
+      display: block;
+      font-family: var(--sans);
       font-size: 0.78rem;
+      color: var(--faint);
+      margin-top: 3px;
+      letter-spacing: 0.01em;
     }
 
     .input-wrap {
       position: relative;
       display: flex;
       align-items: center;
+      width: 132px;
     }
 
     .input-wrap .prefix {
       position: absolute;
-      left: 14px;
+      left: 0;
       color: var(--muted);
-      font-size: 0.95rem;
+      font-family: var(--serif);
+      font-size: 1.1rem;
       pointer-events: none;
     }
 
     .field input {
       width: 100%;
-      background: var(--panel-alt);
-      border: 1px solid var(--border);
-      border-radius: 10px;
+      background: transparent;
+      border: none;
+      border-bottom: 1.5px solid var(--rule);
       color: var(--text);
-      font-size: 1rem;
-      padding: 12px 14px;
-      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      font-family: var(--mono);
+      font-size: 1.15rem;
+      text-align: right;
+      padding: 6px 2px 6px 16px;
+      transition: border-color 0.18s ease;
+      -moz-appearance: textfield;
     }
 
-    .field input.has-prefix { padding-left: 28px; }
+    .field input::-webkit-outer-spin-button,
+    .field input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
 
     .field input:focus {
       outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-soft);
+      border-bottom-color: var(--accent);
     }
 
+    /* ---- Results ---- */
     .results {
-      margin: 12px 28px 0;
-      background: var(--panel-alt);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 22px;
+      margin-top: 30px;
+      padding-top: 26px;
+      border-top: 2px solid var(--rule);
     }
 
     .result-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
+    }
+
+    .metric { padding: 0 4px; }
+    .metric + .metric {
+      border-left: 1px solid var(--rule-soft);
+      padding-left: 26px;
     }
 
     .metric .metric-label {
-      font-size: 0.78rem;
-      color: var(--muted);
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      color: var(--faint);
       text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-bottom: 4px;
+      letter-spacing: 0.18em;
+      margin-bottom: 8px;
     }
 
     .metric .metric-value {
-      font-size: 1.85rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
+      font-family: var(--serif);
+      font-size: clamp(1.9rem, 7vw, 2.5rem);
+      font-weight: 600;
+      line-height: 1;
+      letter-spacing: -0.01em;
     }
 
     .positive { color: var(--positive); }
     .negative { color: var(--negative); }
 
     .equation {
-      margin: 18px 0 0;
-      padding-top: 18px;
-      border-top: 1px solid var(--border);
+      margin-top: 28px;
     }
 
-    .equation .eq-label {
-      font-size: 0.78rem;
-      color: var(--muted);
+    .eq-label {
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      color: var(--faint);
       text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-bottom: 10px;
+      letter-spacing: 0.18em;
+      margin-bottom: 12px;
     }
 
     .equation code {
       display: block;
-      font-family: "SF Mono", "Fira Code", Menlo, Consolas, monospace;
-      font-size: 0.82rem;
-      line-height: 1.7;
-      color: var(--text);
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 12px 14px;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      line-height: 1.85;
+      color: var(--muted);
+      background: var(--panel);
+      border: 1px solid var(--rule-soft);
+      border-radius: 4px;
+      padding: 14px 16px;
       word-break: break-word;
     }
 
     .equation code .hl { color: var(--accent); }
+    .equation code strong { color: var(--text); }
 
+    /* ---- Interpretation (pull quote) ---- */
     .interpretation {
-      margin: 0 28px 28px;
-      padding: 16px 18px;
-      background: var(--accent-soft);
+      margin-top: 30px;
+      padding: 6px 0 6px 22px;
       border-left: 3px solid var(--accent);
-      border-radius: 8px;
-      font-size: 0.92rem;
+      font-family: var(--serif);
+      font-size: 1.18rem;
+      font-style: italic;
       line-height: 1.55;
       color: var(--text);
     }
 
-    .interpretation strong { color: var(--accent); }
+    .interpretation strong {
+      font-style: normal;
+      font-weight: 600;
+      color: var(--accent);
+    }
 
-    @media (max-width: 480px) {
-      .header, .inputs { padding-left: 20px; padding-right: 20px; }
-      .results, .interpretation { margin-left: 20px; margin-right: 20px; }
-      .result-grid { grid-template-columns: 1fr; }
-      .metric .metric-value { font-size: 1.6rem; }
+    .colophon {
+      margin-top: 34px;
+      padding-top: 16px;
+      border-top: 1px solid var(--rule-soft);
+      font-family: var(--sans);
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+      color: var(--faint);
+      text-align: center;
+    }
+
+    @media (max-width: 460px) {
+      body { padding: 32px 16px; }
+      .field {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      .input-wrap { width: 100%; }
+      .field input { text-align: left; padding-left: 16px; }
+      .result-grid { grid-template-columns: 1fr; gap: 22px; }
+      .metric + .metric {
+        border-left: none;
+        padding-left: 4px;
+        border-top: 1px solid var(--rule-soft);
+        padding-top: 22px;
+      }
     }
   </style>
 </head>
 <body>
-  <main class="card">
-    <div class="header">
+  <main class="page">
+    <header class="masthead">
+      <p class="kicker">The Productivity Ledger</p>
       <h1>AI ROI Calculator</h1>
-      <p>Estimate the monthly return on AI tooling for an engineer, based on
-         their bill rate, the productivity boost AI gives them, and what the
-         tools cost.</p>
-    </div>
+      <p class="dek">What does an engineer's AI toolkit actually return each
+         month? Set the three figures below and read the verdict.</p>
+    </header>
 
-    <div class="inputs">
+    <section class="inputs">
       <div class="field">
-        <label for="rate">Engineer bill rate <span class="hint">($ / hour)</span></label>
+        <div class="label-block">
+          <label for="rate">Engineer bill rate</label>
+          <span class="hint">Billable value, in dollars per hour</span>
+        </div>
         <div class="input-wrap">
           <span class="prefix">$</span>
-          <input id="rate" class="has-prefix" type="number" min="0" step="1"
+          <input id="rate" type="number" min="0" step="1"
                  inputmode="decimal" placeholder="150" value="150" />
         </div>
       </div>
 
       <div class="field">
-        <label for="mult">AI efficiency multiplier <span class="hint">(1.2 = 20% more productive)</span></label>
+        <div class="label-block">
+          <label for="mult">AI efficiency multiplier</label>
+          <span class="hint">1.2 means 20% more productive</span>
+        </div>
         <div class="input-wrap">
           <input id="mult" type="number" min="1" step="0.05"
                  inputmode="decimal" placeholder="1.2" value="1.2" />
@@ -232,34 +308,39 @@
       </div>
 
       <div class="field">
-        <label for="cost">Total monthly AI cost <span class="hint">($ / month)</span></label>
+        <div class="label-block">
+          <label for="cost">Total monthly AI cost</label>
+          <span class="hint">All tooling and subscriptions, per month</span>
+        </div>
         <div class="input-wrap">
           <span class="prefix">$</span>
-          <input id="cost" class="has-prefix" type="number" min="0" step="1"
+          <input id="cost" type="number" min="0" step="1"
                  inputmode="decimal" placeholder="100" value="100" />
         </div>
       </div>
-    </div>
+    </section>
 
-    <div class="results">
+    <section class="results">
       <div class="result-grid">
         <div class="metric">
-          <div class="metric-label">ROI</div>
+          <div class="metric-label">Return on Investment</div>
           <div class="metric-value" id="roiValue">—</div>
         </div>
         <div class="metric">
-          <div class="metric-label">Net monthly gain</div>
+          <div class="metric-label">Net Monthly Gain</div>
           <div class="metric-value" id="gainValue">—</div>
         </div>
       </div>
 
       <div class="equation">
-        <div class="eq-label">The math</div>
+        <div class="eq-label">Showing the work</div>
         <code id="equation">—</code>
       </div>
-    </div>
+    </section>
 
-    <div class="interpretation" id="interpretation">—</div>
+    <blockquote class="interpretation" id="interpretation">—</blockquote>
+
+    <p class="colophon">ROI = [ (Rate × 160 hrs × (Multiplier − 1)) − Cost ] ÷ Cost × 100</p>
   </main>
 
   <script>
@@ -303,7 +384,7 @@
           roiEl.className = "metric-value";
           gainEl.className = "metric-value";
           eqEl.innerHTML = "Enter a bill rate, multiplier, and a monthly cost greater than $0.";
-          interpEl.innerHTML = "Fill in all three fields to see your return.";
+          interpEl.innerHTML = "Fill in all three figures to read the verdict.";
           return;
         }
 
@@ -333,12 +414,12 @@
         if (netGain >= 0) {
           msg = "For every <strong>$1</strong> spent on AI, you're getting back about " +
             "<strong>" + fmtNum(returnPerDollar, 2) + "</strong> in engineering value — " +
-            "a net gain of <strong>" + fmtMoney(netGain) + "</strong> per month per engineer.";
+            "a net gain of <strong>" + fmtMoney(netGain) + "</strong> per month, per engineer.";
         } else {
-          msg = "Right now this is costing more than it returns: every <strong>$1</strong> " +
+          msg = "Right now it costs more than it returns: every <strong>$1</strong> " +
             "spent yields only <strong>" + fmtNum(returnPerDollar, 2) + "</strong> back, " +
-            "a net loss of <strong>" + fmtMoney(Math.abs(netGain)) + "</strong> per month. " +
-            "Try a higher bill rate or efficiency multiplier, or a lower cost.";
+            "a net loss of <strong>" + fmtMoney(Math.abs(netGain)) + "</strong> a month. " +
+            "Try a higher rate or multiplier, or a lower cost.";
         }
         interpEl.innerHTML = msg;
       }
