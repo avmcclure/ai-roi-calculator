@@ -215,21 +215,77 @@
       margin-bottom: 12px;
     }
 
-    .equation code {
-      display: block;
-      font-family: var(--mono);
-      font-size: 0.8rem;
-      line-height: 1.85;
-      color: var(--muted);
+    .equation .math {
       background: #fffdf8;
       border: 1px solid var(--rule-soft);
-      border-radius: 8px;
-      padding: 14px 16px;
-      word-break: break-word;
+      border-radius: 10px;
+      padding: 22px 18px 18px;
     }
 
-    .equation code .hl { color: var(--accent); font-weight: 600; }
-    .equation code strong { color: var(--text); }
+    .mathline {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 6px 14px;
+      font-family: var(--serif);
+      font-size: 1.2rem;
+      line-height: 1.2;
+      color: var(--text);
+    }
+
+    .frac {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .frac .num { padding: 0 14px 7px; }
+    .frac .den {
+      padding: 7px 14px 0;
+      border-top: 1.5px solid var(--text);
+    }
+
+    .mathline val {
+      font-style: normal;
+      font-weight: 600;
+      color: var(--accent);
+      white-space: nowrap;
+    }
+
+    .mathline .op { color: var(--faint); }
+
+    .mathline .answer {
+      font-weight: 700;
+      font-size: 1.45rem;
+    }
+
+    .mathstep {
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px dashed var(--rule);
+      text-align: center;
+      font-family: var(--sans);
+      font-size: 0.86rem;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .mathstep b { color: var(--text); font-weight: 600; }
+
+    .math.invalid {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 0.95rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    @media (max-width: 460px) {
+      .mathline { font-size: 1.02rem; }
+      .mathline .answer { font-size: 1.2rem; }
+    }
 
     /* ---- Interpretation (pull quote) ---- */
     .interpretation {
@@ -338,7 +394,7 @@
 
       <div class="equation">
         <div class="eq-label">Showing the work</div>
-        <code id="equation">—</code>
+        <div id="equation" class="math">—</div>
       </div>
     </section>
 
@@ -392,6 +448,7 @@
           gainEl.textContent = "—";
           roiEl.className = "metric-value";
           gainEl.className = "metric-value";
+          eqEl.className = "math invalid";
           eqEl.innerHTML = "Enter a bill rate, hours worked, a productivity increase, and a monthly cost greater than $0.";
           interpEl.innerHTML = "Fill in all four figures to read the verdict.";
           return;
@@ -409,15 +466,28 @@
         roiEl.className = "metric-value " + (roi >= 0 ? "positive" : "negative");
         gainEl.className = "metric-value " + (netGain >= 0 ? "positive" : "negative");
 
-        // Equation with the user's current values substituted in.
+        // Typeset the formula with the user's current values substituted in:
+        // a real fraction bar, then a plain-language breakdown beneath it.
+        var sign = roi >= 0 ? "positive" : "negative";
+        eqEl.className = "math";
         eqEl.innerHTML =
-          "ROI = [ (<span class='hl'>" + fmtMoney(R) + "</span> × <span class='hl'>" +
-          fmtNum(H, 0) + "</span> × <span class='hl'>" +
-          fmtNum(P, 0) + "%</span>) − <span class='hl'>" + fmtMoney(C) +
-          "</span> ] ÷ <span class='hl'>" + fmtMoney(C) + "</span> × 100<br>" +
-          "ROI = [ " + fmtMoney(grossGain) + " − " + fmtMoney(C) + " ] ÷ " +
-          fmtMoney(C) + " × 100<br>" +
-          "ROI = <strong>" + fmtNum(roi, 0) + "%</strong>";
+          "<div class='mathline'>" +
+            "<span class='frac'>" +
+              "<span class='num'>(<val>" + fmtMoney(R) + "</val> " +
+                "<span class='op'>×</span> <val>" + fmtNum(H, 0) + " hrs</val> " +
+                "<span class='op'>×</span> <val>" + fmtNum(P, 0) + "%</val>) " +
+                "<span class='op'>−</span> <val>" + fmtMoney(C) + "</val></span>" +
+              "<span class='den'><val>" + fmtMoney(C) + "</val></span>" +
+            "</span>" +
+            "<span class='op'>× 100</span>" +
+            "<span class='op'>=</span>" +
+            "<span class='answer " + sign + "'>" + fmtNum(roi, 0) + "%</span>" +
+          "</div>" +
+          "<div class='mathstep'>" +
+            "Extra value created <b>" + fmtMoney(grossGain) + "</b> " +
+            "− running cost <b>" + fmtMoney(C) + "</b> " +
+            "= net <b>" + fmtMoney(netGain) + "</b> a month" +
+          "</div>";
 
         // Plain-English interpretation.
         var returnPerDollar = grossGain / C; // dollars returned per dollar spent
