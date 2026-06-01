@@ -510,11 +510,11 @@
         var msg;
         if (netGain >= 0) {
           msg = "For every <strong>$1</strong> spent on AI, you're getting back about " +
-            "<strong>" + fmtNum(returnPerDollar, 2) + "</strong> in engineering value — " +
+            "<strong>$" + fmtNum(returnPerDollar, 2) + "</strong> in engineering value — " +
             "a net gain of <strong>" + fmtMoney(netGain) + "</strong> per month, per engineer.";
         } else {
           msg = "Right now it costs more than it returns: every <strong>$1</strong> " +
-            "spent yields only <strong>" + fmtNum(returnPerDollar, 2) + "</strong> back, " +
+            "spent yields only <strong>$" + fmtNum(returnPerDollar, 2) + "</strong> back, " +
             "a net loss of <strong>" + fmtMoney(Math.abs(netGain)) + "</strong> a month. " +
             "Try a higher rate or productivity increase, or a lower cost.";
         }
