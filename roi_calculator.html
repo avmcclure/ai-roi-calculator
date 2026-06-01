@@ -6,18 +6,18 @@
   <title>AI ROI Calculator</title>
   <style>
     :root {
-      --bg: #14130f;
-      --panel: #1c1a15;
-      --panel-alt: #232019;
-      --rule: #3a352b;
-      --rule-soft: #2b271f;
-      --text: #ece6da;
-      --muted: #9c9484;
-      --faint: #6f6859;
-      --accent: #c9a24b;          /* warm editorial gold */
-      --accent-soft: rgba(201, 162, 75, 0.12);
-      --positive: #8bb87a;
-      --negative: #cf6a52;
+      --bg: #f1e8d7;            /* warm cream backdrop */
+      --card: #fbf6ec;          /* paper */
+      --rule: #e4d8c2;
+      --rule-soft: #ece2d0;
+      --text: #382c24;          /* espresso */
+      --muted: #877963;
+      --faint: #a89a83;
+      --accent: #7a2531;        /* oxblood */
+      --accent-deep: #5e1c26;
+      --accent-soft: #f4e4e2;
+      --positive: #4f7a4d;
+      --negative: #a23a32;
       --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia,
         "Times New Roman", serif;
       --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
@@ -44,23 +44,28 @@
       padding: 48px 20px;
     }
 
-    .page {
+    .card {
       width: 100%;
-      max-width: 600px;
+      max-width: 580px;
+      background: var(--card);
+      border: 1px solid var(--rule);
+      border-radius: 18px;
+      box-shadow: 0 18px 50px rgba(74, 44, 30, 0.10);
+      padding: 40px 40px 32px;
     }
 
-    /* ---- Masthead ---- */
+    /* ---- Header ---- */
     .masthead {
       text-align: center;
-      padding-bottom: 22px;
-      border-bottom: 2px solid var(--rule);
-      position: relative;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--rule);
     }
 
     .kicker {
       font-family: var(--sans);
       font-size: 0.7rem;
-      letter-spacing: 0.32em;
+      font-weight: 600;
+      letter-spacing: 0.26em;
       text-transform: uppercase;
       color: var(--accent);
       margin: 0 0 14px;
@@ -69,10 +74,11 @@
     .masthead h1 {
       font-family: var(--serif);
       font-weight: 600;
-      font-size: clamp(2rem, 7vw, 2.9rem);
-      line-height: 1.05;
+      font-size: clamp(1.9rem, 6vw, 2.6rem);
+      line-height: 1.08;
       letter-spacing: -0.01em;
       margin: 0;
+      color: var(--accent-deep);
     }
 
     .dek {
@@ -81,73 +87,64 @@
       font-size: 1.02rem;
       line-height: 1.55;
       color: var(--muted);
-      max-width: 44ch;
+      max-width: 42ch;
       margin: 14px auto 0;
     }
 
     /* ---- Inputs ---- */
     .inputs {
       display: grid;
-      gap: 4px;
-      margin-top: 14px;
+      gap: 18px;
+      margin-top: 26px;
     }
-
-    .field {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      align-items: center;
-      gap: 16px;
-      padding: 18px 2px;
-      border-bottom: 1px solid var(--rule-soft);
-    }
-
-    .field .label-block { min-width: 0; }
 
     .field label {
       display: block;
       font-family: var(--serif);
-      font-size: 1.08rem;
-      color: var(--text);
+      font-size: 1.04rem;
+      margin-bottom: 7px;
     }
 
     .field .hint {
-      display: block;
       font-family: var(--sans);
+      font-weight: 400;
       font-size: 0.78rem;
       color: var(--faint);
-      margin-top: 3px;
-      letter-spacing: 0.01em;
+      margin-left: 6px;
     }
 
     .input-wrap {
       position: relative;
       display: flex;
       align-items: center;
-      width: 132px;
     }
 
-    .input-wrap .prefix {
+    .input-wrap .affix {
       position: absolute;
-      left: 0;
       color: var(--muted);
       font-family: var(--serif);
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       pointer-events: none;
     }
 
+    .input-wrap .affix.prefix { left: 16px; }
+    .input-wrap .affix.suffix { right: 16px; }
+
     .field input {
       width: 100%;
-      background: transparent;
-      border: none;
-      border-bottom: 1.5px solid var(--rule);
+      background: #fffdf8;
+      border: 1px solid var(--rule);
+      border-radius: 10px;
       color: var(--text);
       font-family: var(--mono);
-      font-size: 1.15rem;
-      text-align: right;
-      padding: 6px 2px 6px 16px;
-      transition: border-color 0.18s ease;
+      font-size: 1.05rem;
+      padding: 13px 16px;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease;
       -moz-appearance: textfield;
     }
+
+    .field input.pad-left { padding-left: 30px; }
+    .field input.pad-right { padding-right: 46px; }
 
     .field input::-webkit-outer-spin-button,
     .field input::-webkit-inner-spin-button {
@@ -157,14 +154,17 @@
 
     .field input:focus {
       outline: none;
-      border-bottom-color: var(--accent);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
     }
 
     /* ---- Results ---- */
     .results {
       margin-top: 30px;
-      padding-top: 26px;
-      border-top: 2px solid var(--rule);
+      padding: 24px;
+      background: #f7efe1;
+      border: 1px solid var(--rule);
+      border-radius: 14px;
     }
 
     .result-grid {
@@ -174,22 +174,23 @@
 
     .metric { padding: 0 4px; }
     .metric + .metric {
-      border-left: 1px solid var(--rule-soft);
-      padding-left: 26px;
+      border-left: 1px solid var(--rule);
+      padding-left: 24px;
     }
 
     .metric .metric-label {
       font-family: var(--sans);
       font-size: 0.7rem;
-      color: var(--faint);
+      font-weight: 600;
+      color: var(--muted);
       text-transform: uppercase;
-      letter-spacing: 0.18em;
+      letter-spacing: 0.14em;
       margin-bottom: 8px;
     }
 
     .metric .metric-value {
       font-family: var(--serif);
-      font-size: clamp(1.9rem, 7vw, 2.5rem);
+      font-size: clamp(1.9rem, 7vw, 2.4rem);
       font-weight: 600;
       line-height: 1;
       letter-spacing: -0.01em;
@@ -199,15 +200,18 @@
     .negative { color: var(--negative); }
 
     .equation {
-      margin-top: 28px;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--rule);
     }
 
     .eq-label {
       font-family: var(--sans);
       font-size: 0.7rem;
-      color: var(--faint);
+      font-weight: 600;
+      color: var(--muted);
       text-transform: uppercase;
-      letter-spacing: 0.18em;
+      letter-spacing: 0.14em;
       margin-bottom: 12px;
     }
 
@@ -217,23 +221,23 @@
       font-size: 0.8rem;
       line-height: 1.85;
       color: var(--muted);
-      background: var(--panel);
+      background: #fffdf8;
       border: 1px solid var(--rule-soft);
-      border-radius: 4px;
+      border-radius: 8px;
       padding: 14px 16px;
       word-break: break-word;
     }
 
-    .equation code .hl { color: var(--accent); }
+    .equation code .hl { color: var(--accent); font-weight: 600; }
     .equation code strong { color: var(--text); }
 
     /* ---- Interpretation (pull quote) ---- */
     .interpretation {
-      margin-top: 30px;
-      padding: 6px 0 6px 22px;
+      margin: 28px 0 0;
+      padding: 4px 0 4px 22px;
       border-left: 3px solid var(--accent);
       font-family: var(--serif);
-      font-size: 1.18rem;
+      font-size: 1.14rem;
       font-style: italic;
       line-height: 1.55;
       color: var(--text);
@@ -246,75 +250,75 @@
     }
 
     .colophon {
-      margin-top: 34px;
+      margin: 30px 0 0;
       padding-top: 16px;
       border-top: 1px solid var(--rule-soft);
       font-family: var(--sans);
       font-size: 0.72rem;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.03em;
       color: var(--faint);
       text-align: center;
     }
 
     @media (max-width: 460px) {
-      body { padding: 32px 16px; }
-      .field {
-        grid-template-columns: 1fr;
-        gap: 10px;
-      }
-      .input-wrap { width: 100%; }
-      .field input { text-align: left; padding-left: 16px; }
+      body { padding: 28px 14px; }
+      .card { padding: 28px 22px 24px; }
       .result-grid { grid-template-columns: 1fr; gap: 22px; }
       .metric + .metric {
         border-left: none;
         padding-left: 4px;
-        border-top: 1px solid var(--rule-soft);
+        border-top: 1px solid var(--rule);
         padding-top: 22px;
       }
     }
   </style>
 </head>
 <body>
-  <main class="page">
+  <main class="card">
     <header class="masthead">
       <p class="kicker">The Productivity Ledger</p>
       <h1>AI ROI Calculator</h1>
       <p class="dek">What does an engineer's AI toolkit actually return each
-         month? Set the three figures below and read the verdict.</p>
+         month? Set the figures below and read the verdict.</p>
     </header>
 
     <section class="inputs">
       <div class="field">
-        <div class="label-block">
-          <label for="rate">Engineer bill rate</label>
-          <span class="hint">Billable value, in dollars per hour</span>
-        </div>
+        <label for="rate">Engineer bill rate
+          <span class="hint">$ per hour</span></label>
         <div class="input-wrap">
-          <span class="prefix">$</span>
-          <input id="rate" type="number" min="0" step="1"
+          <span class="affix prefix">$</span>
+          <input id="rate" class="pad-left" type="number" min="0" step="1"
                  inputmode="decimal" placeholder="150" value="150" />
         </div>
       </div>
 
       <div class="field">
-        <div class="label-block">
-          <label for="mult">AI efficiency multiplier</label>
-          <span class="hint">1.2 means 20% more productive</span>
-        </div>
+        <label for="hours">Hours worked per month
+          <span class="hint">defaults to 160 — 40 hrs × 4 weeks</span></label>
         <div class="input-wrap">
-          <input id="mult" type="number" min="1" step="0.05"
-                 inputmode="decimal" placeholder="1.2" value="1.2" />
+          <span class="affix suffix">hrs</span>
+          <input id="hours" class="pad-right" type="number" min="0" step="1"
+                 inputmode="decimal" placeholder="160" value="160" />
         </div>
       </div>
 
       <div class="field">
-        <div class="label-block">
-          <label for="cost">Total monthly AI cost</label>
-          <span class="hint">All tooling and subscriptions, per month</span>
-        </div>
+        <label for="boost">Productivity increase
+          <span class="hint">a whole number, e.g. 20 for 20%</span></label>
         <div class="input-wrap">
-          <span class="prefix">$</span>
-          <input id="cost" type="number" min="0" step="1"
+          <span class="affix suffix">%</span>
+          <input id="boost" class="pad-right" type="number" min="0" step="1"
+                 inputmode="decimal" placeholder="20" value="20" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="cost">Total monthly AI cost
+          <span class="hint">$ per month</span></label>
+        <div class="input-wrap">
+          <span class="affix prefix">$</span>
+          <input id="cost" class="pad-left" type="number" min="0" step="1"
                  inputmode="decimal" placeholder="100" value="100" />
         </div>
       </div>
@@ -340,15 +344,14 @@
 
     <blockquote class="interpretation" id="interpretation">—</blockquote>
 
-    <p class="colophon">ROI = [ (Rate × 160 hrs × (Multiplier − 1)) − Cost ] ÷ Cost × 100</p>
+    <p class="colophon">ROI = [ (Rate × Hours × Productivity %) − Cost ] ÷ Cost × 100</p>
   </main>
 
   <script>
     (function () {
-      var HOURS = 160; // 40 hrs/week × 4 weeks
-
       var rateEl = document.getElementById("rate");
-      var multEl = document.getElementById("mult");
+      var hoursEl = document.getElementById("hours");
+      var boostEl = document.getElementById("boost");
       var costEl = document.getElementById("cost");
 
       var roiEl = document.getElementById("roiValue");
@@ -371,25 +374,32 @@
         });
       }
 
+      // Accept a whole number (20) or a percentage string ("20%"); both mean 20%.
+      function parsePercent(raw) {
+        return parseFloat(String(raw).replace("%", "").trim());
+      }
+
       function calc() {
         var R = parseFloat(rateEl.value);
-        var M = parseFloat(multEl.value);
+        var H = parseFloat(hoursEl.value); // hours worked per month
+        var P = parsePercent(boostEl.value); // productivity increase, in percent
         var C = parseFloat(costEl.value);
 
-        var valid = isFinite(R) && isFinite(M) && isFinite(C) && C > 0;
+        var valid = isFinite(R) && isFinite(H) && isFinite(P) && isFinite(C) && C > 0;
 
         if (!valid) {
           roiEl.textContent = "—";
           gainEl.textContent = "—";
           roiEl.className = "metric-value";
           gainEl.className = "metric-value";
-          eqEl.innerHTML = "Enter a bill rate, multiplier, and a monthly cost greater than $0.";
-          interpEl.innerHTML = "Fill in all three figures to read the verdict.";
+          eqEl.innerHTML = "Enter a bill rate, hours worked, a productivity increase, and a monthly cost greater than $0.";
+          interpEl.innerHTML = "Fill in all four figures to read the verdict.";
           return;
         }
 
+        var fraction = P / 100; // equivalent of (M − 1)
         // Value of the extra productive hours AI unlocks each month.
-        var grossGain = R * HOURS * (M - 1);
+        var grossGain = R * H * fraction;
         var netGain = grossGain - C;
         var roi = (netGain / C) * 100;
 
@@ -401,9 +411,10 @@
 
         // Equation with the user's current values substituted in.
         eqEl.innerHTML =
-          "ROI = [ (<span class='hl'>" + fmtNum(R, 0) + "</span> × 160 × (<span class='hl'>" +
-          fmtNum(M, 2) + "</span> − 1)) − <span class='hl'>" + fmtNum(C, 0) +
-          "</span> ] ÷ <span class='hl'>" + fmtNum(C, 0) + "</span> × 100<br>" +
+          "ROI = [ (<span class='hl'>" + fmtMoney(R) + "</span> × <span class='hl'>" +
+          fmtNum(H, 0) + "</span> × <span class='hl'>" +
+          fmtNum(P, 0) + "%</span>) − <span class='hl'>" + fmtMoney(C) +
+          "</span> ] ÷ <span class='hl'>" + fmtMoney(C) + "</span> × 100<br>" +
           "ROI = [ " + fmtMoney(grossGain) + " − " + fmtMoney(C) + " ] ÷ " +
           fmtMoney(C) + " × 100<br>" +
           "ROI = <strong>" + fmtNum(roi, 0) + "%</strong>";
@@ -419,12 +430,12 @@
           msg = "Right now it costs more than it returns: every <strong>$1</strong> " +
             "spent yields only <strong>" + fmtNum(returnPerDollar, 2) + "</strong> back, " +
             "a net loss of <strong>" + fmtMoney(Math.abs(netGain)) + "</strong> a month. " +
-            "Try a higher rate or multiplier, or a lower cost.";
+            "Try a higher rate or productivity increase, or a lower cost.";
         }
         interpEl.innerHTML = msg;
       }
 
-      [rateEl, multEl, costEl].forEach(function (el) {
+      [rateEl, boostEl, costEl].forEach(function (el) {
         el.addEventListener("input", calc);
       });
 
