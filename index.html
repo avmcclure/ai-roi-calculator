@@ -224,27 +224,39 @@
 
     .mathline {
       display: flex;
-      flex-wrap: wrap;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      gap: 6px 14px;
+      gap: 12px;
       font-family: var(--serif);
       font-size: 1.2rem;
-      line-height: 1.2;
+      line-height: 1.3;
       color: var(--text);
     }
 
     .frac {
       display: inline-flex;
       flex-direction: column;
-      align-items: center;
+      max-width: 100%;
+    }
+
+    .frac .num {
+      padding: 0 16px 8px;
+      text-align: center;
+      border-bottom: 1.5px solid var(--text);
+    }
+
+    .frac .den {
+      padding: 8px 16px 0;
       text-align: center;
     }
 
-    .frac .num { padding: 0 14px 7px; }
-    .frac .den {
-      padding: 7px 14px 0;
-      border-top: 1.5px solid var(--text);
+    /* keep the parenthesised term from breaking mid-expression */
+    .frac .grp { white-space: nowrap; }
+
+    .mathline .tail {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
     }
 
     .mathline val {
@@ -283,8 +295,8 @@
     }
 
     @media (max-width: 460px) {
-      .mathline { font-size: 1.02rem; }
-      .mathline .answer { font-size: 1.2rem; }
+      .mathline { font-size: 1.05rem; }
+      .mathline .answer { font-size: 1.25rem; }
     }
 
     /* ---- Interpretation (pull quote) ---- */
@@ -473,15 +485,19 @@
         eqEl.innerHTML =
           "<div class='mathline'>" +
             "<span class='frac'>" +
-              "<span class='num'>(<val>" + fmtMoney(R) + "</val> " +
-                "<span class='op'>×</span> <val>" + fmtNum(H, 0) + " hrs</val> " +
-                "<span class='op'>×</span> <val>" + fmtNum(P, 0) + "%</val>) " +
-                "<span class='op'>−</span> <val>" + fmtMoney(C) + "</val></span>" +
+              "<span class='num'>" +
+                "<span class='grp'>(<val>" + fmtMoney(R) + "</val> " +
+                  "<span class='op'>×</span> <val>" + fmtNum(H, 0) + " hrs</val> " +
+                  "<span class='op'>×</span> <val>" + fmtNum(P, 0) + "%</val>)</span> " +
+                "<span class='op'>−</span> <val>" + fmtMoney(C) + "</val>" +
+              "</span>" +
               "<span class='den'><val>" + fmtMoney(C) + "</val></span>" +
             "</span>" +
-            "<span class='op'>× 100</span>" +
-            "<span class='op'>=</span>" +
-            "<span class='answer " + sign + "'>" + fmtNum(roi, 0) + "%</span>" +
+            "<span class='tail'>" +
+              "<span class='op'>× 100</span>" +
+              "<span class='op'>=</span>" +
+              "<span class='answer " + sign + "'>" + fmtNum(roi, 0) + "%</span>" +
+            "</span>" +
           "</div>" +
           "<div class='mathstep'>" +
             "Extra value created <b>" + fmtMoney(grossGain) + "</b> " +
